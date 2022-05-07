@@ -83,4 +83,5 @@ def fft2d(arr):
     return fft_arr
 
 
-fft2d(np.arange(16).reshape((4, 4)))
+if __name__ == "__main__":
+    print(fft2d(np.arange(16).reshape((4, 4))))
