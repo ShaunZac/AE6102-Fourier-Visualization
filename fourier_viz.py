@@ -12,6 +12,7 @@ from traitsui.api import View, Item, Group, HSplit
 from mayavi.core.ui.api import MayaviScene, SceneEditor, \
     MlabSceneModel
 from traitsui.api import CancelButton, OKButton
+from fft import fft_1d, fft2d
 
 
 class plot(HasTraits):
@@ -44,12 +45,12 @@ def main():
     f = np.sinc(x*y/70)*10
     f = np.sinc(x/5)*np.sinc(y/5)*10
     c = np.fft.fft(f)
-    # c[200:] = 0
-    # c[200:] = 0
+    c[230:] = 0
     f2 = np.real(np.fft.ifft(c))
     mlab.surf(x, y, f2)
+    mlab.show()
+    return
 
 
-    ##################################################
 if __name__ == '__main__':
     main()
