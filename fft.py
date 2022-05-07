@@ -5,6 +5,9 @@ import numpy as np
 
 @numba.jit
 def ilog2(n):
+    """
+    Integer value of inverse log 2
+    """
     result = 0
     while n:
         n = n >> 1
@@ -29,16 +32,17 @@ def fft_1d(arr):
     """
     1D FFT, works when array size is power of 2
     """
-    arr = np.asarray(arr, dtype=np.complex128)
+    arr = np.array(arr, dtype=np.complex128)
     n = len(arr)
-    levels = ilog2(n)
-    e_arr = np.zeros_like(arr)
+    bits = ilog2(n)
+    exp_arr = np.zeros_like(arr)
     coeff = -2j * np.pi / n
     for i in range(n):
-        e_arr[i] = np.exp(coeff * i)
-    result = np.empty_like(arr)
+        exp_arr[i] = np.exp(coeff * i)
+
+    fft_result = np.zeros(arr)
     for i in range(n):
-        result[i] = arr[bitrev(i, levels)]
+        fft_result[i] = arr[bitrev(i, bits)]
 
     size = 2
     while size <= n:
@@ -47,12 +51,12 @@ def fft_1d(arr):
         for i in range(0, n, size):
             k = 0
             for j in range(i, i + half_size):
-                temp = result[j + half_size] * e_arr[k]
-                result[j + half_size] = result[j] - temp
-                result[j] += temp
-                k += step
+                temp_val = fft_result[j + half_size] * exp_arr[k]
+                fft_result[j + half_size] = fft_result[j] - temp_val
+                fft_result[j] += temp_val
+                k = k + step
         size *= 2
-    return result
+    return fft_result
 
 
 @numba.njit
