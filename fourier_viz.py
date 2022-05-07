@@ -5,7 +5,7 @@ from traitsui.api import View, Item, Group, HSplit
 from mayavi.core.ui.api import MayaviScene, SceneEditor, \
     MlabSceneModel
 from traitsui.api import CancelButton, OKButton
-from fft import fft_1d, fft2d
+from fft import fft2d
 
 
 class plot(HasTraits):
