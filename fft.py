@@ -1,3 +1,5 @@
+import time
+import numba
 import numpy as np
 
 
@@ -36,20 +38,22 @@ def butterfly(x0, x1):
 
 
 def fft_1d(x):
-
+    """
+    1D implementation of FFT algorithm
+    """
     N = len(x)
-    y = [0] * N
+    y = np.zeros(N, dtype=np.complex128)
     if N == 1:
         y[0] = x[0]
     else:
         N_by_2 = int(N/2)
-        x1 = []
-        x2 = []
+        x1 = np.zeros(N_by_2, dtype=np.complex128)
+        x2 = np.zeros(N_by_2, dtype=np.complex128)
         for i in range(N):
             if i % 2 == 0:
-                x1.append(x[i])
+                x1[i // 2] = x[i]
             else:
-                x2.append(x[i])
+                x2[i // 2] = x[i]
         y1 = fft_1d(x1)
         y2 = fft_1d(x2)
         for k in range(N_by_2):
@@ -59,29 +63,38 @@ def fft_1d(x):
     return y
 
 
-def fft_rows(arr, fft_arr, fn):
-    for i, row in enumerate(arr):
-        fft_arr[i] = fn(arr[i])
+def fft_rows(arr, fft_arr, xsize):
+    """
+    Takes FFT of all rows
+    """
+    for i in range(xsize):
+        fft_arr[i] = fft_1d(arr[i])
     return
 
 
-def fft_cols(fft_arr, fn):
-    for i, col in enumerate(fft_arr.T):
-        fft_arr[:, i] = fn(fft_arr[:, i])
+def fft_cols(fft_arr, ysize):
+    """
+    Takes FFT of all columns
+    """
+    for i in range(ysize):
+        fft_arr[:, i] = fft_1d(fft_arr[:, i])
     return
 
 
 def fft2d(arr):
     """
-    2D fourier transform using 1D
+    2D fourier transform using 1D FFT
     """
     arr = np.array(arr)
     fft_arr = np.zeros_like(arr, dtype=np.complex128)
-    fft_rows(arr, fft_arr, fft_1d)
-    fft_cols(fft_arr, fft_1d)
-
+    fft_rows(arr, fft_arr, fft_arr.shape[0])
+    fft_cols(fft_arr, fft_arr.shape[1])
     return fft_arr
 
 
 if __name__ == "__main__":
-    print(fft2d(np.arange(16).reshape((4, 4))))
+    fft2d(np.ones((256, 256)))
+    array = np.ones((256, 256))
+    start = time.time()
+    fft2d(array)
+    print(f"Time taken {time.time() - start} s")
