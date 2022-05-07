@@ -21,19 +21,6 @@ class plot(HasTraits):
 
     pts = 256
 
-    if fft_pts == '32':
-        pts = 32
-    elif fft_pts == '64':
-        pts = 64
-    elif fft_pts == '128':
-        pts = 128
-    elif fft_pts == '256':
-        pts = 256
-    elif fft_pts == '512':
-        pts = 512
-    elif fft_pts == '1024':
-        pts = 1024
-
     scene = Instance(MlabSceneModel, args=())
 
     func = np.empty((1, 1))
@@ -60,18 +47,19 @@ class plot(HasTraits):
     )
 
     def axis_mod(self):
-        if self.fft_pts == '32':
-            self.pts = 32
-        elif self.fft_pts == '64':
-            self.pts = 64
-        elif self.fft_pts == '128':
-            self.pts = 128
-        elif self.fft_pts == '256':
-            self.pts = 256
-        elif self.fft_pts == '512':
-            self.pts = 512
-        elif self.fft_pts == '1024':
-            self.pts = 1024
+        # if self.fft_pts == '32':
+        #     self.pts = 32
+        # elif self.fft_pts == '64':
+        #     self.pts = 64
+        # elif self.fft_pts == '128':
+        #     self.pts = 128
+        # elif self.fft_pts == '256':
+        #     self.pts = 256
+        # elif self.fft_pts == '512':
+        #     self.pts = 512
+        # elif self.fft_pts == '1024':
+        #     self.pts = 1024
+        self.pts = int(self.fft_pts)
 
         self.x, self.y = np.mgrid[-1 *
                                   self.xrange:self.xrange:int(self.pts) * 1j, -1*self.yrange:self.yrange:int(self.pts) * 1j]
