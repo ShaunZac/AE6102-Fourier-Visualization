@@ -19,22 +19,27 @@ class plot(HasTraits):
 
     perc_coeffs = Range(0, 100, 5, desc='percent of coeff',
                         enter_set=True, auto_set=False)
+    display = Enum('Sinc', 'Cone', 'Parabola')
 
     scene = Instance(MlabSceneModel, args=())
 
-    scalars = 0
+    function = np.empty()
 
     view = View(HSplit(
         Group(Item('scene', editor=SceneEditor(scene_class=MayaviScene),
               height=250, width=300, show_label=False)),
         Group(
-            Item('perc_coeffs')
+            Item('perc_coeffs'),
+            Item('display')
         ),
 
     ), buttons=[OKButton, CancelButton]
     )
 
-    @observe('perc_coeffs, scene.activated')
+    def disp():
+        pass
+
+    @observe('perc_coeffs, display, scene.activated')
     def update_plot(self, event=None):
 
         self.disp()
