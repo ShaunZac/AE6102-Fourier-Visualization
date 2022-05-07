@@ -32,7 +32,7 @@ def fft_1d(arr):
     """
     1D FFT, works when array size is power of 2
     """
-    arr = np.array(arr, dtype=np.complex128)
+    arr = np.asarray(arr, dtype=np.complex128)
     n = len(arr)
     bits = ilog2(n)
     exp_arr = np.zeros_like(arr)
@@ -40,7 +40,7 @@ def fft_1d(arr):
     for i in range(n):
         exp_arr[i] = np.exp(coeff * i)
 
-    fft_result = np.zeros(arr)
+    fft_result = np.zeros_like(arr)
     for i in range(n):
         fft_result[i] = arr[bitrev(i, bits)]
 
