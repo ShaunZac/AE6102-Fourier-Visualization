@@ -44,8 +44,8 @@ class plot(HasTraits):
         x = self.x
         y = self.y
         # f = np.sinc(x*y/70)*10
-        if self.display == 'Sinc':
-            function = np.sinc(x/5)*np.sinc(y/5)*10
+        # if self.display == 'Sinc':
+        function = np.sinc(x/5)*np.sinc(y/5)*10
 
         self.f_coeffs = np.fft.fft2(function)
 
@@ -74,15 +74,17 @@ class plot(HasTraits):
 
 
 def main():
-    x, y = np.mgrid[-20:20:256 * 1j, -20:20:256 * 1j]
-    f = np.sinc(x*y/70)*10
-    f = np.sinc(x/5)*np.sinc(y/5)*10
-    c = np.fft.fft2(f)
-    c[:, 64:] = 0
-    c[64:, :] = 0
-    f2 = np.real(np.fft.ifft2(c))
-    mlab.surf(x, y, f2)
-    mlab.show()
+    # x, y = np.mgrid[-20:20:256 * 1j, -20:20:256 * 1j]
+    # f = np.sinc(x*y/70)*10
+    # f = np.sinc(x/5)*np.sinc(y/5)*10
+    # c = np.fft.fft2(f)
+    # c[:, 64:] = 0
+    # c[64:, :] = 0
+    # f2 = np.real(np.fft.ifft2(c))
+    # mlab.surf(x, y, f2)
+    # mlab.show()
+    p = plot()
+    p.configure_traits()
     return
 
 
