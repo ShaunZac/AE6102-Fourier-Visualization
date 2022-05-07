@@ -16,10 +16,11 @@ class plot(HasTraits):
 
     scene = Instance(MlabSceneModel, args=())
 
-    function = np.empty((1, 1))
+    func = np.empty((1, 1))
     x, y = np.mgrid[-20:20:256 * 1j, -20:20:256 * 1j]
 
     f_coeffs = np.empty((1, 1))
+    f2 = np.empty((1, 1))
 
     view = View(HSplit(
         Group(Item('scene', editor=SceneEditor(scene_class=MayaviScene),
@@ -64,11 +65,17 @@ class plot(HasTraits):
 
     @observe('display, scene.activated')
     def show_plot(self, event=None):
+        self.scene.mlab.clf()
         self.disp()
+        self.scene.mlab.surf(self.x, self.y, self.func)
+        # self.scene.mlab.show()
 
     @observe('perc_coeffs')
     def update_plot(self, event=None):
+        self.scene.mlab.clf()
         self.update()
+        self.scene.mlab.surf(self.x, self.y, self.f2)
+        # self.scene.mlab.show()
 
 
 def main():
