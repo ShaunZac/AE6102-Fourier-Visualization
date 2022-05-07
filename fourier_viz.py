@@ -1,12 +1,5 @@
-from tvtk.api import tvtk
 from mayavi import mlab
 import numpy as np
-from scipy.integrate import odeint
-from tvtk.api import write_data
-from os import listdir, mkdir, remove
-from os.path import isfile, join, exists
-from PIL import Image
-from moviepy import editor
 from traits.api import HasTraits, Range, Instance, Enum, observe
 from traitsui.api import View, Item, Group, HSplit
 from mayavi.core.ui.api import MayaviScene, SceneEditor, \
@@ -17,7 +10,7 @@ from fft import fft_1d, fft2d
 
 class plot(HasTraits):
 
-    perc_coeffs = Range(0, 100, 5, desc='percent of coeff',
+    perc_coeffs = Range(1, 100, 100, desc='percent of coeff',
                         enter_set=True, auto_set=False)
     display = Enum('Sinc', 'Cone', 'Parabola')
 
@@ -43,25 +36,30 @@ class plot(HasTraits):
         mlab.clf()
         x = self.x
         y = self.y
-        # f = np.sinc(x*y/70)*10
-        # if self.display == 'Sinc':
-        self.function = np.sinc(x/5)*np.sinc(y/5)*10
+
+        if self.display == 'Sinc':
+            self.function = np.sinc(x/5)*np.sinc(y/5)*50
+        elif self.display == 'Cone':
+            self.function = 5 * np.sqrt(x ** 2 + y ** 2)
+        else:
+            self.function = y ** 2 - 5 * x
 
         self.f_coeffs = np.fft.fft2(self.function)
 
-        mlab.surf(x, y, self.function)
-        mlab.show()
+        self.update()
         return
 
     def update(self):
         mlab.clf()
         x = self.x
         y = self.y
-        self.f_coeffs[:, 64:] = 0
-        self.f_coeffs[64:, :] = 0
-        f2 = np.real(np.fft.ifft2(self.f_coeffs))
+        x_idx = int(round(self.perc_coeffs * len(x) / 100))
+        y_idx = int(round(self.perc_coeffs * len(y) / 100))
+        f_coeffs = self.f_coeffs.copy()
+        f_coeffs[:, y_idx:] = 0
+        f_coeffs[x_idx:, :] = 0
+        f2 = np.real(np.fft.ifft2(f_coeffs))
         mlab.surf(x, y, f2)
-        mlab.show()
         return
 
     @observe('display, scene.activated')
