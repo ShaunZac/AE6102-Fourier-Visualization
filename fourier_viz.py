@@ -10,7 +10,7 @@ from fft import fft2d
 
 class plot(HasTraits):
 
-    perc_coeffs = Range(1, 100, 100, desc='percent of coeff',
+    perc_coeffs = Range(1, 100, 90, desc='percent of coeff',
                         enter_set=True, auto_set=False)
     display = Enum('Sinc', 'Cone', 'Parabola')
 
@@ -45,7 +45,7 @@ class plot(HasTraits):
         else:
             self.function = y ** 2 - 5 * x
 
-        self.f_coeffs = np.fft.fft2(self.function)
+        self.f_coeffs = fft2d(self.function)
 
         self.update()
         return
@@ -67,15 +67,11 @@ class plot(HasTraits):
     def show_plot(self, event=None):
         self.scene.mlab.clf()
         self.disp()
-        self.scene.mlab.surf(self.x, self.y, self.func)
-        # self.scene.mlab.show()
 
     @observe('perc_coeffs')
     def update_plot(self, event=None):
         self.scene.mlab.clf()
         self.update()
-        self.scene.mlab.surf(self.x, self.y, self.f2)
-        # self.scene.mlab.show()
 
 
 def main():
