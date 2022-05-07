@@ -44,9 +44,10 @@ def main():
     x, y = np.mgrid[-20:20:256 * 1j, -20:20:256 * 1j]
     f = np.sinc(x*y/70)*10
     f = np.sinc(x/5)*np.sinc(y/5)*10
-    c = np.fft.fft(f)
+    c = np.fft.fft2(f)
     c[:, 64:] = 0
-    f2 = np.real(np.fft.ifft(c))
+    c[64:, :] = 0
+    f2 = np.real(np.fft.ifft2(c))
     mlab.surf(x, y, f2)
     mlab.show()
     return
