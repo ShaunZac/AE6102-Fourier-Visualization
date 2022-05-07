@@ -45,11 +45,11 @@ class plot(HasTraits):
         y = self.y
         # f = np.sinc(x*y/70)*10
         # if self.display == 'Sinc':
-        function = np.sinc(x/5)*np.sinc(y/5)*10
+        self.function = np.sinc(x/5)*np.sinc(y/5)*10
 
-        self.f_coeffs = np.fft.fft2(function)
+        self.f_coeffs = np.fft.fft2(self.function)
 
-        mlab.surf(x, y, function)
+        mlab.surf(x, y, self.function)
         mlab.show()
         return
 
