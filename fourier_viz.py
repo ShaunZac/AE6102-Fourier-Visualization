@@ -24,8 +24,6 @@ class plot(HasTraits):
     scene = Instance(MlabSceneModel, args=())
 
     func = np.empty((1, 1))
-    # x, y = np.mgrid[-1*int(self.xrange):int(self.xrange):int(pts)
-    #                 * 1j, -1*int(self.yrange):int(self.yrange):int(pts) * 1j]
     x = np.empty((1, 1))
     y = np.empty((1, 1))
 
@@ -47,22 +45,12 @@ class plot(HasTraits):
     )
 
     def axis_mod(self):
-        # if self.fft_pts == '32':
-        #     self.pts = 32
-        # elif self.fft_pts == '64':
-        #     self.pts = 64
-        # elif self.fft_pts == '128':
-        #     self.pts = 128
-        # elif self.fft_pts == '256':
-        #     self.pts = 256
-        # elif self.fft_pts == '512':
-        #     self.pts = 512
-        # elif self.fft_pts == '1024':
-        #     self.pts = 1024
         self.pts = int(self.fft_pts)
 
-        self.x, self.y = np.mgrid[-1 *
-                                  self.xrange:self.xrange:int(self.pts) * 1j, -1*self.yrange:self.yrange:int(self.pts) * 1j]
+        self.x, self.y = np.mgrid[
+            -1 * self.xrange:self.xrange:int(self.pts) * 1j,
+            -1*self.yrange:self.yrange:int(self.pts) * 1j
+        ]
 
     def disp(self):
         mlab.clf()
@@ -72,9 +60,13 @@ class plot(HasTraits):
             self.function = np.sinc(x/5)*np.sinc(y/5)*50
         elif self.display == 'Cone':
             self.function = 5 * np.sqrt(x ** 2 + y ** 2)
+        elif self.display == 'Triangle':
+            self.function = np.zeros_like(x)
+            self.function[:self.xrange//2, :self.yrange //
+                          2] = np.max(0, self.xrange//2+self.yrange//2-x-y)
         else:
             self.function = np.zeros_like(x)
-            self.function[:self.xrange//2, :self.yrange//2] = 10
+            self.function[:self.xrange//2, :self.yrange//2] = 25
 
         self.f_coeffs = fft2d(self.function)
 
@@ -113,15 +105,6 @@ class plot(HasTraits):
 
 
 def main():
-    # x, y = np.mgrid[-20:20:256 * 1j, -20:20:256 * 1j]
-    # f = np.sinc(x*y/70)*10
-    # f = np.sinc(x/5)*np.sinc(y/5)*10
-    # c = np.fft.fft2(f)
-    # c[:, 64:] = 0
-    # c[64:, :] = 0
-    # f2 = np.real(np.fft.ifft2(c))
-    # mlab.surf(x, y, f2)
-    # mlab.show()
     p = plot()
     p.configure_traits()
     return
