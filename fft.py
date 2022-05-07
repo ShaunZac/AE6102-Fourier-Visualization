@@ -59,8 +59,28 @@ def fft_1d(x):
     return y
 
 
-def fft2d(x):
+def fft_rows(arr, fft_arr, fn):
+    for i, row in enumerate(arr):
+        fft_arr[i] = fn(arr[i])
+    return
+
+
+def fft_cols(fft_arr, fn):
+    for i, col in enumerate(fft_arr.T):
+        fft_arr[:, i] = fn(fft_arr[:, i])
+    return
+
+
+def fft2d(arr):
     """
     2D fourier transform using 1D
     """
-    return
+    arr = np.array(arr)
+    fft_arr = np.zeros_like(arr, dtype=np.complex128)
+    fft_rows(arr, fft_arr, fft_1d)
+    fft_cols(fft_arr, fft_1d)
+
+    return fft_arr
+
+
+fft2d(np.arange(16).reshape((4, 4)))
