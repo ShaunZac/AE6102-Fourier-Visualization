@@ -24,6 +24,9 @@ class plot(HasTraits):
     scene = Instance(MlabSceneModel, args=())
 
     function = np.empty()
+    x, y = np.mgrid[-20:20:256 * 1j, -20:20:256 * 1j]
+    f = np.sinc(x*y/70)*10
+    function = np.sinc(x/5)*np.sinc(y/5)*10
 
     view = View(HSplit(
         Group(Item('scene', editor=SceneEditor(scene_class=MayaviScene),
@@ -37,12 +40,27 @@ class plot(HasTraits):
     )
 
     def disp():
-        pass
+        x, y = np.mgrid[-20:20:256 * 1j, -20:20:256 * 1j]
+        f = np.sinc(x*y/70)*10
+        if self.display == 'Sinc':
+            function = np.sinc(x/5)*np.sinc(y/5)*10
+        c = np.fft.fft(f)
+        c[:, 64:] = 0
+        f2 = np.real(np.fft.ifft(c))
+        mlab.surf(x, y, f2)
+        mlab.show()
+        return
 
-    @observe('perc_coeffs, display, scene.activated')
-    def update_plot(self, event=None):
+    def update():
+        return
 
+    @observe('display, scene.activated')
+    def show_plot(self, event=None):
         self.disp()
+
+    @observe('perc_coeffs')
+    def update_plot(self, event=None):
+        self.update()
 
 
 def main():
