@@ -23,10 +23,11 @@ class plot(HasTraits):
 
     scene = Instance(MlabSceneModel, args=())
 
-    function = np.empty((1, 1))
+    func = np.empty((1, 1))
     x, y = np.mgrid[-20:20:256 * 1j, -20:20:256 * 1j]
 
     f_coeffs = np.empty((1, 1))
+    f2 = np.empty((1, 1))
 
     view = View(HSplit(
         Group(Item('scene', editor=SceneEditor(scene_class=MayaviScene),
@@ -40,37 +41,35 @@ class plot(HasTraits):
     )
 
     def disp(self):
-        mlab.clf()
-        x = self.x
-        y = self.y
+
         # f = np.sinc(x*y/70)*10
         # if self.display == 'Sinc':
-        self.function = np.sinc(x/5)*np.sinc(y/5)*10
+        self.func = np.sinc(self.x/5)*np.sinc(self.y/5)*10
+        self.f_coeffs = np.fft.fft2(self.func)
 
-        self.f_coeffs = np.fft.fft2(self.function)
-
-        mlab.surf(x, y, self.function)
-        mlab.show()
         return
 
     def update(self):
-        mlab.clf()
-        x = self.x
-        y = self.y
+
         self.f_coeffs[:, 64:] = 0
         self.f_coeffs[64:, :] = 0
-        f2 = np.real(np.fft.ifft2(self.f_coeffs))
-        mlab.surf(x, y, f2)
-        mlab.show()
+        self.f2 = np.real(np.fft.ifft2(self.f_coeffs))
+
         return
 
     @observe('display, scene.activated')
     def show_plot(self, event=None):
+        self.scene.mlab.clf()
         self.disp()
+        self.scene.mlab.surf(self.x, self.y, self.func)
+        # self.scene.mlab.show()
 
     @observe('perc_coeffs')
     def update_plot(self, event=None):
+        self.scene.mlab.clf()
         self.update()
+        self.scene.mlab.surf(self.x, self.y, self.f2)
+        # self.scene.mlab.show()
 
 
 def main():
