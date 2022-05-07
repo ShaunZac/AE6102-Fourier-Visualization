@@ -45,7 +45,7 @@ def main():
     f = np.sinc(x*y/70)*10
     f = np.sinc(x/5)*np.sinc(y/5)*10
     c = np.fft.fft(f)
-    c[230:] = 0
+    c[:, 64:] = 0
     f2 = np.real(np.fft.ifft(c))
     mlab.surf(x, y, f2)
     mlab.show()
