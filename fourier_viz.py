@@ -23,10 +23,10 @@ class plot(HasTraits):
 
     scene = Instance(MlabSceneModel, args=())
 
-    function = np.empty()
+    function = np.empty((1, 1))
     x, y = np.mgrid[-20:20:256 * 1j, -20:20:256 * 1j]
-    f = np.sinc(x*y/70)*10
-    function = np.sinc(x/5)*np.sinc(y/5)*10
+
+    f_coeffs = np.empty((1, 1))
 
     view = View(HSplit(
         Group(Item('scene', editor=SceneEditor(scene_class=MayaviScene),
@@ -39,19 +39,29 @@ class plot(HasTraits):
     ), buttons=[OKButton, CancelButton]
     )
 
-    def disp():
-        x, y = np.mgrid[-20:20:256 * 1j, -20:20:256 * 1j]
-        f = np.sinc(x*y/70)*10
+    def disp(self):
+        mlab.clf()
+        x = self.x
+        y = self.y
+        # f = np.sinc(x*y/70)*10
         if self.display == 'Sinc':
             function = np.sinc(x/5)*np.sinc(y/5)*10
-        c = np.fft.fft(f)
-        c[:, 64:] = 0
-        f2 = np.real(np.fft.ifft(c))
-        mlab.surf(x, y, f2)
+
+        self.f_coeffs = np.fft.fft2(function)
+
+        mlab.surf(x, y, function)
         mlab.show()
         return
 
-    def update():
+    def update(self):
+        mlab.clf()
+        x = self.x
+        y = self.y
+        self.f_coeffs[:, 64:] = 0
+        self.f_coeffs[64:, :] = 0
+        f2 = np.real(np.fft.ifft2(self.f_coeffs))
+        mlab.surf(x, y, f2)
+        mlab.show()
         return
 
     @observe('display, scene.activated')
