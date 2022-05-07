@@ -12,7 +12,7 @@ class plot(HasTraits):
 
     perc_coeffs = Range(1, 100, 90, desc='percent of coeff',
                         enter_set=True, auto_set=False)
-    display = Enum('Sinc', 'Cone', 'Parabola', desc='function')
+    display = Enum('Sinc', 'Cone', 'Rect', desc='function')
     fft_pts = Enum('32', '64', '128', '256', '512', '1024')
     xrange = Range(1, 100, 20, desc='x Range',
                    enter_set=True, auto_set=False)
@@ -73,7 +73,8 @@ class plot(HasTraits):
         elif self.display == 'Cone':
             self.function = 5 * np.sqrt(x ** 2 + y ** 2)
         else:
-            self.function = y ** 2 - 5 * x
+            self.function = np.zeros_like(x)
+            self.function[:self.xrange//2, :self.yrange//2] = 10
 
         self.f_coeffs = fft2d(self.function)
 
