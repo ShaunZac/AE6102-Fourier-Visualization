@@ -1,6 +1,7 @@
 import time
 import numba
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 @numba.jit
@@ -90,9 +91,52 @@ def fft2d(arr):
     return fft_arr
 
 
+def avg_time(arr, func, num_iters=100):
+    times = np.zeros(num_iters)
+    for i in range(num_iters):
+        start = time.time()
+        func(arr)
+        end = time.time()
+        times[i] = end - start
+    return np.mean(times)
+
+
+def fn_performance(func, num_iters=100):
+    np.random.seed(0)
+    arr_16 = np.random.random((16, 16))
+    arr_32 = np.random.random((32, 32))
+    arr_64 = np.random.random((64, 64))
+    arr_128 = np.random.random((128, 128))
+    arr_256 = np.random.random((256, 256))
+    arr_512 = np.random.random((512, 512))
+    arr_1024 = np.random.random((1024, 1024))
+
+    times = [
+        avg_time(arr_16, func, num_iters),
+        avg_time(arr_32, func, num_iters),
+        avg_time(arr_64, func, num_iters),
+        avg_time(arr_128, func, num_iters),
+        avg_time(arr_256, func, num_iters),
+        avg_time(arr_512, func, num_iters),
+        avg_time(arr_1024, func, num_iters)
+    ]
+    return times
+
+
+def plot_times(times, legend=["FFT times"]):
+    plt.figure(figsize=(8, 8))
+    plt.rcParams.update({'font.size': 16})
+    for time_plt in times:
+        plt.plot([2**i for i in range(4, 11)], time_plt)
+    plt.title("Time vs FFT size")
+    plt.legend(legend)
+    plt.xlabel("Size of 2D FFT Transform")
+    plt.ylabel("Time taken (s)")
+    plt.show()
+
+
 if __name__ == "__main__":
-    fft2d(np.ones((256, 256)))
-    array = np.ones((256, 256))
-    start = time.time()
-    fft2d(array)
-    print(f"Time taken {time.time() - start} s")
+    fft2d(np.ones((4, 4)))
+    times_numba_fft = np.array(fn_performance(fft2d))
+    times_np_fft = np.array(fn_performance(np.fft.fft))
+    plot_times([times_numba_fft, times_np_fft], ["Numba FFT", "Numpy FFT"])
