@@ -32,7 +32,7 @@ class plot(HasTraits):
 
     view = View(HSplit(
         Group(Item('scene', editor=SceneEditor(scene_class=MayaviScene),
-              height=250, width=300, show_label=False)),
+              height=550, width=600, show_label=False)),
         Group(
             Item('perc_coeffs'),
             Item('display'),
