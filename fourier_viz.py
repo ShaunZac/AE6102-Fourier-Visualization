@@ -10,9 +10,9 @@ from fft import fft2d
 
 class plot(HasTraits):
 
-    perc_coeffs = Range(1, 100, 90, desc='percent of coeff',
+    perc_coeffs = Range(1, 100, 100, desc='percent of coeff',
                         enter_set=True, auto_set=False)
-    display = Enum('Sinc', 'Cone', 'Rect', desc='function')
+    display = Enum('Sinc', 'Cone', 'Rect', 'InvertedCone', desc='function')
     fft_pts = Enum('32', '64', '128', '256', '512', '1024')
     xrange = Range(1, 100, 20, desc='x Range',
                    enter_set=True, auto_set=False)
@@ -60,13 +60,14 @@ class plot(HasTraits):
             self.function = np.sinc(x/5)*np.sinc(y/5)*50
         elif self.display == 'Cone':
             self.function = 5 * np.sqrt(x ** 2 + y ** 2)
-        elif self.display == 'Triangle':
+        elif self.display == 'InvertedCone':
             self.function = np.zeros_like(x)
-            self.function[:self.xrange//2, :self.yrange //
-                          2] = np.max(0, self.xrange//2+self.yrange//2-x-y)
+            self.function = 50 - 5 * np.sqrt(x ** 2 + y ** 2)
+            self.function[self.function < 0] = 0
         else:
             self.function = np.zeros_like(x)
-            self.function[:self.xrange//2, :self.yrange//2] = 25
+            self.function[self.pts//4:3*self.pts //
+                          4, self.pts//4:3*self.pts//4] = 25
 
         self.f_coeffs = fft2d(self.function)
 
@@ -84,6 +85,7 @@ class plot(HasTraits):
         f_coeffs[x_idx:, :] = 0
         f2 = np.real(np.fft.ifft2(f_coeffs))
         mlab.surf(x, y, f2)
+        mlab.axes()
         mlab.outline()
         return
 
